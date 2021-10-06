@@ -8,7 +8,7 @@ import getCellWithCoordinate, {
 import getInternalCells from "./scripts/getInternalCells";
 
 const App: React.FC = () => {
-  const cellSize = { x: 100, y: 100 };
+  const cellSize = { x: 150, y: 150 };
   const [canvasCtx, setCanvasCtx] = useState<CanvasRenderingContext2D>();
   const [containerSize, setContainerSize] = useState({ width: 10, height: 10 });
   const containerRef = useCallback((node) => {
@@ -61,14 +61,12 @@ const App: React.FC = () => {
             m.x2 === cell.x2 &&
             m.y2 === cell.y2
         );
-        if (cellModifier?.isClicked === true) {
+        if (cellModifier?.isActive === true) {
           canvasCtx.fillStyle = "black";
           canvasCtx.fill();
         } else {
           canvasCtx.fillStyle = "white";
           canvasCtx.fill();
-          // canvasCtx.strokeStyle = "#737373";
-          // canvasCtx.stroke();
         }
       }
     }
@@ -98,12 +96,12 @@ const App: React.FC = () => {
         const currentModifier = modifiers[modifierIndex];
         modifiers[modifierIndex] = {
           ...currentModifier,
-          isClicked: !currentModifier.isClicked,
+          isActive: !currentModifier.isActive,
         };
         setGridCellModifiers([...modifiers]);
       }
     } else {
-      modifiers.push({ ...cell, isClicked: true });
+      modifiers.push({ ...cell, isActive: true });
       setGridCellModifiers([...modifiers]);
     }
   };
@@ -133,19 +131,18 @@ const App: React.FC = () => {
   useEffect(() => {
     if (containerSize) {
       const borderCells = getBorderCells(gridCells) as CellCoordinates[];
-      console.log({ borderCells, gridCells });
       const internalCells = getInternalCells(
         borderCells,
         gridCells
       ) as CellCoordinates[];
-      setGridCellModifiers([
-        ...internalCells.map((i) => ({ ...i, isClicked: true })),
-      ]);
+      // setGridCellModifiers([
+      // ...borderCells.map((i) => ({ ...i, isActive: true })),
+      // ...internalCells.map((i) => ({ ...i, isActive: true })),
+      // ]);
       drawGrid();
     }
   }, [containerSize, canvasCtx]);
   useEffect(drawGrid, [gridCellModifiers]);
-
   return (
     <div ref={containerRef} className="container">
       <canvas
